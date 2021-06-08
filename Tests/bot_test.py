@@ -1,3 +1,96 @@
+import sys
+import pathlib
+from botbuilder.core import adapters
+import pytest
+import aiounittest
+import asyncio
+
+
+from botbuilder.dialogs.prompts import (
+    AttachmentPrompt, 
+    PromptOptions, 
+    PromptValidatorContext, 
+)
+
+from botbuilder.core import (
+    TurnContext, 
+    ConversationState, 
+    MemoryStorage, 
+    MessageFactory, 
+)
+from botbuilder.schema import Activity, ActivityTypes, Attachment
+from botbuilder.dialogs import DialogSet, DialogTurnStatus
+#from email_prompt import EmailPrompt
+from botbuilder.core.adapters import TestAdapter
+
+
+from ..booking_details import Booking_Details
+
+
+
+
+class Test(aiounittest.AsyncTestCase):
+    async def test_destit(self):
+        async def destination_step(
+                self, step_context: WaterfallStepContext
+            ) -> DialogTurnResult:
+                """Prompt for destination."""
+                booking_details = step_context.options
+
+                if booking_details.destination is None:
+                    return await step_context.prompt(
+                        TextPrompt.__name__,
+                        PromptOptions(
+                            prompt=MessageFactory.text("To what city would you like to travel?")
+                        ),
+                    )  
+
+                await step_context.next(booking_details.destination)
+        adapter = TestAdapter(destination_step)
+        conv_state = ConversationState(MemoryStorage())
+
+        dialogs_state = conv_state.create_property("dialog-state")
+        dialogs = DialogSet(dialogs_state)
+
+        
+        step1 = await adapter.test('Hello', 'Where do you want to go')
+        step2 = await step1.send('I want to go to London')
+        await step2.assert_reply("ok")
+
+# --------------------------------------------------------
+async def test_email_prompt(self):
+        async def exec_test(turn_context:TurnContext):
+            dialog_context = await dialogs.create_context(turn_context)
+
+            results = await dialog_context.continue_dialog()
+            if (results.status == DialogTurnStatus.Empty):
+                options = PromptOptions(
+                    prompt = Activity(
+                        type = ActivityTypes.message, 
+                        text = "What is your email address?"
+                        )
+                    )
+                await dialog_context.prompt("emailprompt", options)
+
+            elif results.status == DialogTurnStatus.Complete:
+                reply = results.result
+                await turn_context.send_activity(reply)
+
+            await conv_state.save_changes(turn_context)
+
+        adapter = TestAdapter(exec_test)
+
+        conv_state = ConversationState(MemoryStorage())
+
+        dialogs_state = conv_state.create_property("dialog-state")
+        dialogs = DialogSet(dialogs_state)
+        dialogs.add(EmailPrompt("emailprompt"))
+
+        step1 = await adapter.test('Hello', 'What is your email address?')
+        step2 = await step1.send('My email id is r.vinoth@live.com')
+        await step2.assert_reply("r.vinoth@live.com")
+# -----------------------------------------
+
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 """Flight booking dialog."""

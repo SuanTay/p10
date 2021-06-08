@@ -35,6 +35,7 @@ class LuisHelper:
         """
         Returns an object with preformatted LUIS results for the bot's dialogs to consume.
         """
+        print("LUIS Helper")
         result = None
         intent = None
 
@@ -53,7 +54,7 @@ class LuisHelper:
 
             if intent == Intent.BOOK_FLIGHT.value:
                 result = BookingDetails()
-
+                print("LUIS Helper01")
                 # dst_city
                 to_entities = recognizer_result.entities.get("$instance", {}).get("dst_city", [])
             
@@ -77,18 +78,19 @@ class LuisHelper:
                 # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
                 # e.g. missing a Year.
                 # ----
-                date_entities = recognizer_result.entities.get("$instance", {}).get("str_date", [])
-                
-                if len(date_entities) > 0:
-                    datetime = date_entities[0]["text"]
-                    Recognizer = require('@microsoft/recognizers-text-date-time')
-                    result = Recognizer.recognizeDateTime(datetime, Recognizer.Culture.English);
-                    print(result)
-                    result.travel_date = date_entities[0]["text"]
+                date_entities = recognizer_result.entities.get("str_date", [])
+                if date_entities:
+                    timex = date_entities[0]["timex"]
+
+                    if timex:
+                        datetime = timex[0].split("T")[0]
+
+                        result.travel_date = datetime
+
                 else:
                     result.travel_date = None
 
         except Exception as exception:
-            print(exception)
+            print('execute_luis_query',exception)
 
         return intent, result

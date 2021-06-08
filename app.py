@@ -80,8 +80,8 @@ async def messages(req: Request) -> Response:
         return json_response(data=response.body, status=response.status)
     return Response(status=HTTPStatus.OK)
 
-
-APP = web.Application(middlewares=[ aiohttp_error_middleware]) #bot_telemetry_middleware,
+#
+APP = web.Application(middlewares=[bot_telemetry_middleware,aiohttp_error_middleware])
 APP.router.add_post("/api/messages", messages)
 
 if __name__ == "__main__":

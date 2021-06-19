@@ -32,7 +32,7 @@ from override_fill_recognizer import OverrideFillRecognizer
 from telemetry_override_recognizer import TelemetryOverrideRecognizer
 
 
-LUIS_APP_ID = "22dace73-c035-4def-a5c0-072306b41258"
+LUIS_APP_ID = "bf408bed-468d-4d08-aafd-77e84acd9643"
 LUIS_API_KEY = "27c8037609e64e908a3cc829433e4437" # Authoring key
 LUIS_API_HOST_NAME ="https://luisflyme02-authoring.cognitiveservices.azure.com/" 
 
@@ -44,28 +44,11 @@ class LuisRecognizerTest(AsyncTestCase):
     def __init__(self, *args, **kwargs):
         super(LuisRecognizerTest, self).__init__(*args, **kwargs)
         self._mocked_results: RecognizerResult = RecognizerResult(
-            intents={"Test": IntentScore(score=0.2), "Greeting": IntentScore(score=0.4)}
+            intents={"Test": IntentScore(score=0.2), "book": IntentScore(score=0.4)}
         )
         self._empty_luis_response: Dict[str, object] = json.loads(
             '{ "query": null, "intents": [], "entities": [] }'
         )
-
-    def test_luis_recognizer_construction(self):
-        # Arrange
-        endpoint = (
-            "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/"
-            "b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360"
-            "&subscription-key=048ec46dc58e495482b0c447cfdbd291&q="
-        )
-
-        # Act
-        recognizer = LuisRecognizer(endpoint)
-
-        # Assert
-        app = recognizer._application
-        self.assertEqual("b31aeaf3-3511-495b-a07f-571fc873214b", app.application_id)
-        self.assertEqual("048ec46dc58e495482b0c447cfdbd291", app.endpoint_key)
-        self.assertEqual("https://westus.api.cognitive.microsoft.com", app.endpoint)
 
     def test_none_endpoint(self):
         # Arrange
@@ -104,7 +87,7 @@ class LuisRecognizerTest(AsyncTestCase):
  
     def test_top_intent_returns_top_intent(self):
         greeting_intent: str = LuisRecognizer.top_intent(self._mocked_results)
-        self.assertEqual(greeting_intent, "Greeting")
+        self.assertEqual(greeting_intent, "book")
 
     def test_top_intent_returns_default_intent_if_min_score_is_higher(self):
         default_intent: str = LuisRecognizer.top_intent(
@@ -122,12 +105,6 @@ class LuisRecognizerTest(AsyncTestCase):
         none_results: RecognizerResult = None
         with self.assertRaises(TypeError):
             LuisRecognizer.top_intent(none_results)
-
-    def test_top_intent_returns_top_intent_if_score_equals_min_score(self):
-        default_intent: str = LuisRecognizer.top_intent(
-            self._mocked_results, min_score=0.4
-        )
-        self.assertEqual(default_intent, "Greeting")
 
     def test_telemetry_construction(self):
         # Arrange

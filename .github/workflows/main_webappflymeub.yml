@@ -64,3 +64,6 @@ jobs:
           app-name: 'webappflymeub'
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_899e88b6da2e443993d1d43430bfd43c }}
+      - name: Run Test
+        run: 
+          python -m unittest discover tests

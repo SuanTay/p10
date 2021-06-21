@@ -63,4 +63,4 @@ jobs:
         with:
           app-name: 'webappflymeub'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_7a5a6aa511bb4f8b8c663cc7e23ac0b2 }}
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_899e88b6da2e443993d1d43430bfd43c }}

@@ -33,9 +33,9 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Run Test
-      run: 
-        python -m unittest discover -s tests
+    #- name: Run Test
+    #  run: 
+    #    python -m unittest discover -s tests
     # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
     - name: Upload artifact for deployment jobs

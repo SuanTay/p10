@@ -33,7 +33,9 @@ jobs:
         pip install --upgrade pip
         pip install -r requirements.txt
     
-
+    - name: Run Test
+      run: 
+        python -m unittest discover tests
     # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
     - name: Upload artifact for deployment jobs
@@ -64,6 +66,4 @@ jobs:
           app-name: 'webappflymeub'
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_899e88b6da2e443993d1d43430bfd43c }}
-      - name: Run Test
-        run: 
-          python -m unittest discover tests
+     

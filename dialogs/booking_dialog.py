@@ -159,7 +159,10 @@ class BookingDialog(CancelAndHelpDialog):
         """Complete the interaction and end the dialog."""
         print('In final_step', step_context.result)
         if step_context.result:
-            return await step_context.end_dialog()
+            booking_details = step_context.options
+            booking_details.budget = step_context.result
+
+            return await step_context.end_dialog(booking_details)
         else:
             booking_details = step_context.options
             properties = {}
